@@ -1,0 +1,6 @@
+Departure: Moscow 2023-06-22 19:10 
+Arrival: Izhevsk 2023-06-22 21:50 
+Flight Time: 1h 30m 
+Passanger: Petr Petrov 
+Baggage: 20Kg 
+Price: 3500.00 Rub 
