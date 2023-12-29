@@ -2,33 +2,29 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 )
 
 func main() {
 	var number int64
-	number = 20
-	value, index := 0, 2
+	number = 2
 
-	changedValue := changeInt64(number, value, index)
+	changedValue := changeInt64Bit(number, 1, 0)
 
-	fmt.Printf("changedValue: %d\n", changedValue)
+	fmt.Printf("changedValue: %v\n", changedValue)
 }
 
-func changeInt64(number int64, value, index int) int64 {
-	binaryValue := strconv.FormatInt(number, 2)
-
-	stringedValue := strconv.Itoa(value)
-
-	// 1) Cut first part of the string (from 0 to index)
-	// 2) Add new value
-	// 3) Cut rest of the string (from index + 1 to the end)
-	binaryValue = binaryValue[:index] + stringedValue + binaryValue[index + 1:]
-
-	changedValue, err := strconv.ParseInt(binaryValue, 2, 64)
-	if err != nil {
-		panic(err)
+func changeInt64Bit(number int64, bitValue, bitPosition int) int64 {
+	if bitValue != 1 && bitValue != 0 {
+		panic("Invalid value of bit")
 	}
 
-	return changedValue
+	if bitValue == 1 {
+		number = number | (1 << bitPosition)
+		return number
+	}
+
+	var mask int64 = ^(1 << bitPosition)
+
+	number = number & mask
+	return number
 }
