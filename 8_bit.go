@@ -23,6 +23,8 @@ func changeInt64Bit(number int64, bitValue, bitPosition int) int64 {
 		return number
 	}
 
+	// bitValue == 0
+	
 	var mask int64 = ^(1 << bitPosition)
 
 	number = number & mask
