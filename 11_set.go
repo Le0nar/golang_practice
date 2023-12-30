@@ -11,6 +11,7 @@ func main() {
 	fmt.Printf("intersections: %v\n", intersections)
 }
 
+// TODO: find a more optimized solution
 func getIntersection[T comparable](firstList, secondList []T) []T {
 	intersections := make([]T, 0)
 

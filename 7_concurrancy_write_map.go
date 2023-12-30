@@ -8,7 +8,6 @@ import (
 )
 
 func main() {
-	// TODO: look for better solution
 	var mux sync.Mutex
 	
 	object := make(map[int]int)
