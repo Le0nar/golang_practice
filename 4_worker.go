@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const workersQuantity = 3
+const workersQuantity = 5
 
 func main() {
 	quit := make(chan os.Signal)
@@ -25,7 +25,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	for i := 0; i < workersQuantity; i++ {
-		go startWorker(ctx, &wg, intChan)
+		go startWorker(ctx, &wg, intChan, i)
 	}
 
 	go seedRandInt(intChan)
@@ -38,14 +38,14 @@ func main() {
 	fmt.Printf("The program exits")
 }
 
-func startWorker(ctx context.Context, wg *sync.WaitGroup, ch chan int) {
+func startWorker(ctx context.Context, wg *sync.WaitGroup, ch chan int, workerId int) {
 	for {
 		select {
 		case value := <- ch:
-			fmt.Printf("value: %v\n", value)
+			fmt.Printf("worker %d say: %v\n",workerId, value)
 			
 		case <- ctx.Done():
-			fmt.Printf("Worker finishes work \n")
+			fmt.Printf("Worker %d finishes work \n", workerId)
 			wg.Done()
 			return
 		}
