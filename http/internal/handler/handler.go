@@ -6,15 +6,10 @@ import (
 
 	customerror "github.com/Le0nar/golang_practice/http/internal/custom_error"
 	"github.com/Le0nar/golang_practice/http/internal/event"
+	"github.com/Le0nar/golang_practice/http/internal/response"
 )
 
 // TODO: move to antoher file
-type resultResponse struct {
-	result event.Event `json:"result"`
-}
-type errorResponse struct {
-	error event.Event `json:"error"`
-}
 
 type service interface {
 	CreateEvent(dto event.EventDto) (*event.Event, *customerror.CustomError)
@@ -31,6 +26,7 @@ func NewHandler(s service) *Handler {
 func (h *Handler) InitRouter() http.Handler {
 	mux := http.NewServeMux()
 
+	// TODO: add midleware logger for handler function
 	// POST
 	mux.HandleFunc("/create_event", h.createEvent)
 	mux.HandleFunc("/update_event", h.updateEvent)
@@ -51,18 +47,30 @@ func (h *Handler) createEvent(w http.ResponseWriter, r *http.Request) {
 	// TODO: add validation for requeried fields
 	dec := json.NewDecoder(r.Body)
 	dec.DisallowUnknownFields()
-
 	err := dec.Decode(&dto)
+
+	w.Header().Set("Content-Type", "application/json")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		errorData, _ := json.Marshal(response.ErrorResponse{Error: err.Error()})
+
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(errorData)
 		return
 	}
 
 	e, customErr := h.service.CreateEvent(dto)
 
-	// TODO: вернуть ответ 503 или 500
+	if customErr != nil {
+		errorData, _ := json.Marshal(response.ErrorResponse{Error: customErr.Err.Error()})
 
-	// TODO: вернуть ответ 200
+		w.WriteHeader(customErr.StatusCode)
+		w.Write(errorData)
+		return
+	}
+
+	successData, _ := json.Marshal(*e)
+
+	w.Write(successData)
 }
 
 func (h *Handler) updateEvent(w http.ResponseWriter, r *http.Request) {

@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"net/http"
+	"strconv"
 	"time"
 
 	customerror "github.com/Le0nar/golang_practice/http/internal/custom_error"
@@ -23,13 +24,13 @@ func NewService(r repository) *Serivce {
 
 func (s *Serivce) CreateEvent(dto event.EventDto) (*event.Event, *customerror.CustomError) {
 
-	eventId := time.Now().String()
+	eventId := strconv.FormatInt(time.Now().Unix(), 10)
 	e := event.Event{UserId: dto.UserId, Date: dto.Date, Content: dto.Content, Id: eventId}
 
 	charLen := len([]rune(e.Content))
 
-	if charLen > 1000 {
-		return nil, &customerror.CustomError{StatusCode: http.StatusServiceUnavailable, Err: errors.New("Value has more than 1000 characters")}
+	if charLen > 10 {
+		return nil, &customerror.CustomError{StatusCode: http.StatusServiceUnavailable, Err: errors.New("value has more than 10 characters")}
 	}
 
 	err := s.repository.CreateEvent(e)
