@@ -6,6 +6,7 @@ import (
 
 	customerror "github.com/Le0nar/golang_practice/http/internal/custom_error"
 	"github.com/Le0nar/golang_practice/http/internal/event"
+	"github.com/Le0nar/golang_practice/http/internal/logging"
 	"github.com/Le0nar/golang_practice/http/internal/response"
 )
 
@@ -37,7 +38,10 @@ func (h *Handler) InitRouter() http.Handler {
 	mux.HandleFunc("/events_for_week", h.getEventForWeek)
 	mux.HandleFunc("/events_for_month", h.getEventForMonth)
 
-	return mux
+	// adding middleware
+	router := logging.Logging(mux)
+
+	return router
 }
 
 func (h *Handler) createEvent(w http.ResponseWriter, r *http.Request) {
