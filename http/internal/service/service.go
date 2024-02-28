@@ -22,7 +22,7 @@ func NewService(r repository) *Serivce {
 	return &Serivce{repository: r}
 }
 
-func (s *Serivce) CreateEvent(dto event.EventDto) (*event.Event, *customerror.CustomError) {
+func (s *Serivce) CreateEvent(dto event.CreateEventDto) (*event.Event, *customerror.CustomError) {
 
 	eventId := strconv.FormatInt(time.Now().Unix(), 10)
 	e := event.Event{UserId: dto.UserId, Date: dto.Date, Content: dto.Content, Id: eventId}

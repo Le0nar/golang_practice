@@ -13,7 +13,7 @@ import (
 // TODO: move to antoher file
 
 type service interface {
-	CreateEvent(dto event.EventDto) (*event.Event, *customerror.CustomError)
+	CreateEvent(dto event.CreateEventDto) (*event.Event, *customerror.CustomError)
 }
 
 type Handler struct {
@@ -45,13 +45,7 @@ func (h *Handler) InitRouter() http.Handler {
 }
 
 func (h *Handler) createEvent(w http.ResponseWriter, r *http.Request) {
-	// TODO: mb add check for r.Method == "POST"
-	var dto event.EventDto
-
-	// TODO: add validation for requeried fields
-	dec := json.NewDecoder(r.Body)
-	dec.DisallowUnknownFields()
-	err := dec.Decode(&dto)
+	dto, err := serializeCreateEventDto(r)
 
 	w.Header().Set("Content-Type", "application/json")
 	if err != nil {
@@ -62,7 +56,7 @@ func (h *Handler) createEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	e, customErr := h.service.CreateEvent(dto)
+	e, customErr := h.service.CreateEvent(*dto)
 
 	if customErr != nil {
 		errorData, _ := json.Marshal(response.ErrorResponse{Error: customErr.Err.Error()})
@@ -72,9 +66,9 @@ func (h *Handler) createEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	successData, _ := json.Marshal(*e)
+	resultData, _ := json.Marshal(response.ResultResponse{Result: *e})
 
-	w.Write(successData)
+	w.Write(resultData)
 }
 
 func (h *Handler) updateEvent(w http.ResponseWriter, r *http.Request) {
